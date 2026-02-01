@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+pub use reqwest::Response;
+
 #[derive(Debug)]
 pub enum Error {
     Reqwest(reqwest::Error),
@@ -28,6 +30,7 @@ pub struct IdentityClient {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct LoginResponse {
+    token: String
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -38,12 +41,10 @@ pub struct LoginRequest {
 
 
 impl IdentityClient {
-    pub async fn login(&self, request: LoginRequest) -> Result<LoginResponse> {
+    pub async fn login(&self, request: LoginRequest) -> Result<Response> {
         let body = serde_json::to_string(&request)?;
 
         let r = self.client.post(self.host.clone()).body(body).send().await?;
-        let r = r.text().await?;
-        let r = serde_json::from_str::<LoginResponse>(r.as_str())?;
 
         Ok(r)
     }
@@ -52,4 +53,3 @@ impl IdentityClient {
 pub fn create_client(host: String) -> IdentityClient {
     IdentityClient { client: reqwest::Client::new(), host }
 }
-
