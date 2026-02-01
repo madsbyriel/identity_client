@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
@@ -8,7 +10,8 @@ pub use reqwest::Response;
 #[derive(Debug)]
 pub enum Error {
     Reqwest(reqwest::Error),
-    SerdeJson(serde_json::Error)
+    SerdeJson(serde_json::Error),
+    UrlParseError(anyhow::Error),
 }
 
 impl std::fmt::Display for Error {
@@ -45,13 +48,42 @@ pub struct LoginRequest {
     pub password: String,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SignupRequest {
+    pub username: String,
+    pub password: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SignupResponse {
+    pub token: String
+}
+
 
 impl IdentityClient {
     pub async fn login(&self, request: LoginRequest) -> Result<Response> {
         let body = serde_json::to_string(&request)?;
 
-        let r = self.client.post(self.host.clone()).body(body).send().await?;
+        let path = Path::new(&self.host.clone()).join("login");
+        let path = match path.to_str() {
+            Some(v) => Ok(v),
+            None => Err(Error::UrlParseError(anyhow::anyhow!("error parsing url"))),
+        }?;
 
+        let r = self.client.post(path).body(body).send().await?;
+        Ok(r)
+    }
+
+    pub async fn signup(&self, request: LoginRequest) -> Result<Response> {
+        let body = serde_json::to_string(&request)?;
+
+        let path = Path::new(&self.host.clone()).join("signup");
+        let path = match path.to_str() {
+            Some(v) => Ok(v),
+            None => Err(Error::UrlParseError(anyhow::anyhow!("error parsing url"))),
+        }?;
+
+        let r = self.client.post(path).body(body).send().await?;
         Ok(r)
     }
 }
