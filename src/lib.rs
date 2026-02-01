@@ -36,7 +36,7 @@ pub struct IdentityClient {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct LoginResponse {
-    token: String
+    pub token: String
 }
 
 #[derive(Debug, Deserialize, Serialize)]
