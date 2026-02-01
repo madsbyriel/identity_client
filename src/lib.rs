@@ -51,6 +51,7 @@ pub struct LoginRequest {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SignupRequest {
     pub username: String,
+    pub email: String,
     pub password: String,
 }
 
