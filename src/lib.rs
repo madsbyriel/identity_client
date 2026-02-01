@@ -75,7 +75,7 @@ impl IdentityClient {
         Ok(r)
     }
 
-    pub async fn signup(&self, request: LoginRequest) -> Result<Response> {
+    pub async fn signup(&self, request: SignupRequest) -> Result<Response> {
         let body = serde_json::to_string(&request)?;
 
         let path = Path::new(&self.host.clone()).join("signup");
