@@ -66,7 +66,9 @@ pub struct AuthRequest {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct AuthResponse;
+pub struct AuthResponse {
+    pub user: identity_db_client::models::user::User
+}
 
 impl IdentityClient {
     async fn serialize_and_send_post<T>(&self, body: &T, path: &str) -> Result<Response>
@@ -92,7 +94,7 @@ impl IdentityClient {
         self.serialize_and_send_post(&request, "signup").await
     }
 
-    pub async fn auth(&self, request: SignupRequest) -> Result<Response> {
+    pub async fn auth(&self, request: AuthRequest) -> Result<Response> {
         self.serialize_and_send_post(&request, "auth").await
     }
 }
