@@ -67,7 +67,7 @@ pub struct AuthRequest {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AuthResponse {
-    pub user: identity_db_client::models::user::User
+    pub user: identity_common::models::user::User
 }
 
 impl IdentityClient {
