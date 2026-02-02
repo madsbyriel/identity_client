@@ -38,14 +38,14 @@ pub struct IdentityClient {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct LoginResponse {
-    pub token: String
-}
-
-#[derive(Debug, Deserialize, Serialize)]
 pub struct LoginRequest {
     pub username: String,
     pub password: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct LoginResponse {
+    pub token: String
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -60,12 +60,21 @@ pub struct SignupResponse {
     pub token: String
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct AuthRequest {
+    pub token: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct AuthResponse;
 
 impl IdentityClient {
-    pub async fn login(&self, request: LoginRequest) -> Result<Response> {
-        let body = serde_json::to_string(&request)?;
+    async fn serialize_and_send_post<T>(&self, body: &T, path: &str) -> Result<Response>
+    where T: Serialize
+    {
+        let body = serde_json::to_string(body)?;
 
-        let path = Path::new(&self.host.clone()).join("login");
+        let path = Path::new(&self.host.clone()).join(path);
         let path = match path.to_str() {
             Some(v) => Ok(v),
             None => Err(Error::UrlParseError(anyhow::anyhow!("error parsing url"))),
@@ -75,17 +84,16 @@ impl IdentityClient {
         Ok(r)
     }
 
+    pub async fn login(&self, request: LoginRequest) -> Result<Response> {
+        self.serialize_and_send_post(&request, "login").await
+    }
+
     pub async fn signup(&self, request: SignupRequest) -> Result<Response> {
-        let body = serde_json::to_string(&request)?;
+        self.serialize_and_send_post(&request, "signup").await
+    }
 
-        let path = Path::new(&self.host.clone()).join("signup");
-        let path = match path.to_str() {
-            Some(v) => Ok(v),
-            None => Err(Error::UrlParseError(anyhow::anyhow!("error parsing url"))),
-        }?;
-
-        let r = self.client.post(path).body(body).send().await?;
-        Ok(r)
+    pub async fn auth(&self, request: SignupRequest) -> Result<Response> {
+        self.serialize_and_send_post(&request, "auth").await
     }
 }
 
