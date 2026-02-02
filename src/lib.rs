@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use identity_common::models::user::User;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
@@ -67,7 +68,7 @@ pub struct AuthRequest {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AuthResponse {
-    pub user: identity_common::models::user::User
+    pub user: User
 }
 
 impl IdentityClient {

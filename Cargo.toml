@@ -1,6 +1,6 @@
 [package]
 name = "identity_client"
-version = "3.0.0"
+version = "3.0.1"
 edition = "2024"
 authors = ["Mads Hvid Byriel <madshbyriel@gmail.com>"]
 description = "Identity Client"
